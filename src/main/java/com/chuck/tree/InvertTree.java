@@ -1,5 +1,8 @@
 package com.chuck.tree;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class InvertTree {
 
     public TreeNode invertTree(TreeNode root) {
@@ -124,6 +127,33 @@ public class InvertTree {
         return rr;
     }
 
+
+    List<TreeNode> treeNodes = new ArrayList<>();
+    public List<TreeNode> generateTrees(int n) {
+        if (n == 0) return new ArrayList<>();
+        return generateTree(1, n);
+    }
+
+    private List<TreeNode> generateTree(int l, int r) {
+        List<TreeNode> list = new ArrayList<>();
+        if (l > r) {
+            list.add(null);
+            return list;
+        }
+        for (int j = l; j <= r; j++) {
+            List<TreeNode> left = generateTree(l, j -1);
+            List<TreeNode> right = generateTree(j+1, r);
+            for(TreeNode lnode : left) {
+                for (TreeNode rnode: right) {
+                    TreeNode node = new TreeNode(j);
+                    node.left = lnode;
+                    node.right = rnode;
+                    list.add(node);
+                }
+            }
+        }
+        return list;
+    }
 
 }
 

@@ -54,9 +54,98 @@ public class Solution {
         return max;
     }
 
+    public int minFallingPathSum(int[][] matrix) {
+        int l = matrix.length;
+        if (l == 1) return matrix[0][0];
+        for (int i = 1; i < l; i++) {
+            for (int j = 0; j < l; j++) {
+                if (j == 0) {
+                    matrix[i][j] += Math.min(matrix[i - 1][j], matrix[i - 1][j+1]);
+                } else  if (j == l - 1) {
+                    matrix[i][j] += Math.min(matrix[i - 1][j], matrix[i-1][j-1]);
+                } else {
+                    matrix[i][j] += Math.min(matrix[i - 1][j], Math.min(matrix[i-1][j-1], matrix[i - 1][j+1]));
+                }
+            }
+        }
+        int min =  Integer.MAX_VALUE;
+        for (int i = 0; i < l; i++) {
+            min = Math.min(matrix[l - 1][i], min);
+        }
+        return min;
+    }
+
+
+    int number = 0;
+    public int findTargetSumWays(int[] nums, int target) {
+        findTargetSumWays(nums, 0, target);
+        return number;
+    }
+
+    private void findTargetSumWays(int[] nums, int index, int target) {
+        if (target == 0 && index == nums.length) {
+            number++;
+            return;
+        }
+        if (index == nums.length - 1) return;
+        findTargetSumWays(nums, index + 1, target - nums[index]);
+        findTargetSumWays(nums, index + 1, target + nums[index]);
+    }
+
+    int[][] disMemo;
+    public int minDistance(String word1, String word2) {
+        disMemo = new int[word1.length() + 1][word2.length() + 1];
+        for (int i = 0; i < word1.length() + 1; i++) {
+            for (int j = 0; j < word2.length() + 1; j++) {
+                disMemo[i][j] = -1;
+            }
+        }
+        return minDisDp(word1, word2, word1.length() - 1, word2.length() - 1);
+    }
+
+    private int minDisDp(String word1, String word2, int m, int n) {
+        if (m == -1) return n+1;
+        if (n == -1) return m+1;
+
+        if (disMemo[m][n] > 0) return disMemo[m][n];
+
+        if (word1.charAt(m) == word2.charAt(n)) {
+            disMemo[m][n] = minDisDp(word1, word2, m - 1, n - 1);
+            return disMemo[m][n];
+        }
+        // 增加一个
+        // 删除一个
+        // 替换一个
+        disMemo[m][n] = Math.min(minDisDp(word1, word2, m, n - 1), Math.min(minDisDp(word1, word2, m - 1, n),
+                minDisDp(word1, word2, m - 1, n - 1) )) + 1;
+
+        return disMemo[m][n];
+    }
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        solution.subsets(new int[]{1,2});
+        solution.findTargetSumWays(new int[]{1,1}, 2);
+    }
+
+
+
+    public int numDecodings(String s) {
+        int n = s.length();
+        int prepre = 0;
+        int pre = 1;
+        int cur = 0;
+        for (int i = 1; i <= n ; i++) {
+            cur = 0;
+            if (s.charAt(i - 1) != '0') {
+                cur += pre;
+            }
+            if (i > 1 && s.charAt(i - 2) != '0' &&((s.charAt(i-2) - '0') * 10 + (s.charAt(i-1) - '0') ) <=26) {
+                cur += prepre;
+            }
+            prepre = pre;
+            pre = cur;
+        }
+
+        return cur;
     }
 }
